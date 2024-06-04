@@ -1,0 +1,201 @@
+﻿/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+/* Header Styling */
+header {
+    background-color: #282c34;
+    color: white;
+    padding: 15px 0;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+    header .bar {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    header .QuickLinks ul {
+        list-style-type: none;
+        display: flex;
+    }
+
+    header .QuickLinks li {
+        margin-right: 20px;
+    }
+
+    header a {
+        color: white;
+        text-decoration: none;
+        margin: 0 15px;
+        transition: color 0.3s;
+    }
+
+        header a:hover {
+            color: #36b7a8; /* Darker turquoise */
+        }
+
+    header .Checkout .goToCart {
+        background-color: #36b7a8; /* Darker turquoise */
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+
+        header .Checkout .goToCart:hover {
+            background-color: #2a8d86; /* Even darker turquoise */
+        }
+
+/* Filters Styling */
+#filters {
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 150px; /* Lower the filters */
+    right: 20px; /* Move to right side */
+    width: 260px;
+    z-index: 1000;
+}
+
+    #filters .filterBreak {
+        margin-bottom: 20px;
+    }
+
+    #filters input[type="text"], #filters button {
+        width: calc(100% - 24px);
+        padding: 10px;
+        margin: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    #filters button {
+        background-color: #36b7a8; /* Darker turquoise */
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+        #filters button:hover {
+            background-color: #2a8d86; /* Even darker turquoise */
+        }
+
+    #filters .priceInputText {
+        width: calc(50% - 24px);
+        display: inline-block;
+        margin: 10px;
+    }
+
+/* Product List Styling */
+#ProductList {
+    margin-top: 150px;
+    margin-right: 320px; /* Space for the filters */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card img {
+        display: block;
+        width: 100%;
+        height: 200px; /* Fixed height for uniformity */
+        object-fit: cover; /* Ensures the image covers the area */
+        transition: transform 0.3s;
+    }
+
+    .card:hover img {
+        transform: scale(1.05);
+    }
+
+    .card h1 {
+        font-size: 1.5em;
+        margin: 15px 0;
+    }
+
+    .card .price {
+        color: #e74c3c;
+        font-size: 1.2em;
+    }
+
+    .card .description {
+        color: #7f8c8d;
+        margin: 10px 0;
+        padding: 0 10px; /* Provide some padding for a better look */
+    }
+
+    .card button {
+        background-color: #36b7a8; /* Darker turquoise */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+    }
+
+        .card button:hover {
+            background-color: #2a8d86; /* Even darker turquoise */
+        }
+
+/* Pagination Styling */
+.pagination {
+    margin: 20px 0;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .pagination a {
+        color: #36b7a8; /* Darker turquoise */
+        text-decoration: none;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        margin: 0 5px;
+        transition: background 0.3s, border 0.3s;
+        border-radius: 5px;
+    }
+
+        .pagination a:hover {
+            background-color: #36b7a8; /* Darker turquoise */
+            color: white;
+            border: 1px solid #36b7a8;
+        }

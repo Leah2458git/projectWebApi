@@ -1,0 +1,58 @@
+﻿<!--<!DOCTYPE html>
+<html>
+<head>
+    <link href="Style/UpdateUser.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body style="text-align:center">
+
+
+    <h1 id="result"></h1>
+    <h3>לעדכון פרטי משתמש</h3>
+    <label>שם משתמש</label><br />
+    <input id="email" /><br /><br />
+    <label>סיסמא</label><br />
+    <input id="passwordRegister" oninput="CheckPassword()" /><br /><br />
+    <button style="color: chocolate" onClick="CheckPassword()">בדיקת חוזק סיסמא</button><br /><br />
+    <progress id="passwordStrengh" max="4" value="0"></progress><br /><br />
+    <label>שם פרטי</label><br />
+    <input id="firstName" /><br /><br />
+    <label>שם משפחה</label><br />
+    <input id="lastName" /><br /><br />
+    <button style="color: chocolate" onclick="UpdateUserDetails()">עדכון</button>
+    <script>
+        document.getElementById("result").innerHTML = JSON.parse(sessionStorage.getItem("user")).firstName + " שלום  ";
+    </script>
+</body>
+<script src="../Scripts/userActions.js"></script>
+</html>-->
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="Style/UpdateUser.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <title>עדכון פרטי משתמש</title>
+</head>
+<body>
+    <div class="card">
+        <h1 id="result"></h1>
+        <h3>לעדכון פרטי משתמש</h3><br/>
+        <label>שם משתמש</label>
+        <input id="email" type="text" /><br />
+        <label>סיסמא</label>
+        <input id="passwordRegister" type="password" oninput="CheckPassword()" /><br />
+        <!--<button onclick="CheckPassword()">בדיקת חוזק סיסמא</button><br />-->
+        <progress id="passwordStrengh" max="4" value="0"></progress><br />
+        <label>שם פרטי</label>
+        <input id="firstName" type="text" /><br />
+        <label>שם משפחה</label>
+        <input id="lastName" type="text" /><br />
+        <button onclick="UpdateUserDetails()">עדכון</button>
+    </div>
+    <script>
+        document.getElementById("result").innerHTML = JSON.parse(sessionStorage.getItem("user")).firstName + " שלום  ";
+    </script>
+    <script src="../Scripts/userActions.js"></script>
+</body>
+</html>

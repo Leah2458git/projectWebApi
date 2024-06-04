@@ -1,0 +1,1070 @@
+
+var basketCount;
+var topSearchResult, topSearchLoader;
+var lastSearchValue = "";
+var menuContainer;
+var hpNewsObj = { ref: null, index: 1, max: 0, interval: null };
+
+jQuery(document).ready(function () {
+
+    $(".slider").each(function () {
+        var item = this;
+        var items = JSON.parse($(item).attr("data-items"));
+        $(item).attr("data-items", "");
+        var slider_options = {
+            items: items,
+            loadBeforeView: true,
+            infinite: $(this).attr("data-infinite") == "true",
+            slidesToShow: parseInt($(this).attr("data-slides-to-show")),
+            slidesToScroll: parseInt($(this).attr("data-slides-to-scroll")),
+            autoplay: $(this).attr("data-autoplay") == "true",
+            fade: $(this).attr("data-fade") == "true",
+            autoplaySpeed: parseInt($(this).attr("data-autoplay-speed")),
+            cssEase: $(this).attr("data-css-ease"),
+            lazyLoad: $(this).attr("data-lazy-load"),
+            dots: $(this).attr("data-dots") == "true",
+            prevArrow: '<button alt="הקודם" title="הקודם" class="slick-arrow prev-arrow">' + (typeof ($(this).attr("data-prev")) != "undefined" ? $(this).attr("data-prev") : '<svg viewBox="0 0 16000 16000" style="position:absolute;top:0;left:0;width:100%;height:100%;"><polyline class="a" points="11040,1920 4960,8000 11040,14080"></polyline></svg>') + '</button>',
+            nextArrow: '<button alt="הבא" title="הבא" class="slick-arrow next-arrow">' + (typeof ($(this).attr("data-next")) != "undefined" ? $(this).attr("data-next") : '<svg viewBox="0 0 16000 16000" style="position:absolute;top:0;left:0;width:100%;height:100%;"><polyline class="a" points="4960,1920 11040,8000 4960,14080"></polyline></svg>') + '</button>',
+            thumbnails: undefined,
+            printItemTitle: $(this).attr("data-print-item-title") == "true",
+            overflowHiddenClass: $(this).attr("data-overflow-hidden-class") == "true"
+        };
+        if ($(item).prop("id") == "product_page_slider") {
+            slider_options.thumbnails = {
+                allow: true,
+                slidesToShow: $(item).attr("data-count") - 0.09,//https://stackoverflow.com/questions/64801247/slick-slider-arrows-hidden-when-total-number-of-slides-and-slides-shown-are-equa
+                dots: false,
+                prevArrow: '<button alt="חץ ימין" class="slick-arrow prev-arrow"><img src="/images/right-icon.png"></button>',
+                nextArrow: '<button alt="חץ שמאל" class="slick-arrow next-arrow"><img src="/images/left-icon.png" ></button>'
+            };
+            slider_options.arrows = false;
+        }
+        $(this).ecSlider(slider_options);
+    });
+
+
+
+    $('.products-group-container').each(function () {
+        var elem = this;
+        var checkAndStartSlider = function () {
+            if (isCloseToView(elem)) {
+                $(window).off("scroll", checkAndStartSlider);
+                $(elem).find(".books-slider").on('initialized.owl.carousel', function (event) {
+                    $(this).animate({ opacity: 1 });
+                    $(elem).css("min-height", "unset");
+                    setTimeout(function () {
+                        var nav = $(elem).find(".owl-nav");
+                        $(nav).find("button").addClass("nav-buttons").insertAfter(nav);
+                        $(nav).remove();
+                    }, 100);
+                }).owlCarousel({
+                    loop: true,
+                    margin: 0,
+                    nav: true,
+                    navText: ["<img src='/images/site/books-slider-right.png'  alt='גלילה לימין' title='גלילה לימין'>", "<img src='/images/site/books-slider-left.png' alt='גלילה לשמאל' title='גלילה לשמאל'>"],
+                    dots: false,
+                    lazyLoad: true,
+                    rtl: true,
+                    items: 2,
+                    slideBy: 2,
+                    responsive: {
+                        812: {
+                            items: 2,
+                            slideBy: 2
+                        },
+                        992: {
+                            items: 5,
+                            slideBy: 5
+                        }
+                    }
+                });
+            }
+        }
+        $(window).on("scroll", checkAndStartSlider);
+    });
+
+
+
+
+    hpNewsObj.ref = $("#hp-news");
+    if ($(hpNewsObj.ref).length > 0) {
+        hpNewsObj.max = $(hpNewsObj.ref).find(".hpn").length;
+        var move = function (next) {
+            if (next) {
+                hpNewsObj.index++;
+                if (hpNewsObj.index > hpNewsObj.max) {
+                    hpNewsObj.index = 1;
+                }
+            }
+            else {
+                hpNewsObj.index--;
+                if (hpNewsObj.index < 1) {
+                    hpNewsObj.index = hpNewsObj.max;
+                }
+            }
+            $(hpNewsObj.ref).attr("data-active", hpNewsObj.index);
+        };
+        var set_interval = function () {
+            hpNewsObj.interval = setInterval(function () {
+                move(true);
+            }, 4000);
+        }
+        var clear_interval = function () {
+            if (typeof (hpNewsObj.interval) != "undefined" && hpNewsObj.interval != null) {
+                clearInterval(hpNewsObj.interval);
+            }
+        }
+        $(hpNewsObj.ref).find("#hp-new-left-button").click(function () {
+            move(true);
+        });
+        $(hpNewsObj.ref).find("#hp-new-right-button").click(function () {
+            move(false);
+        });
+        $(hpNewsObj.ref).mouseenter(function () {
+            clear_interval();
+        });
+        $(hpNewsObj.ref).mouseleave(function () {
+            set_interval();
+        });
+        set_interval();
+    }
+    else {
+        $(hpNewsObj.ref).hide();
+    }
+
+
+
+    // $(function () {
+    // $(window).scroll(function () {
+    // var scroll = $(window).scrollTop();
+    // if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    // $('#logomobile').height(50);
+    // $('#logomobile').width(50);
+    // //$('.marg').css("margin-top","-20px");
+    // $('#top-logo').css("right", "13%");
+    // }
+    // else {
+    // $('#logomobile').height(70);
+    // $('#logomobile').width(70);
+    // $('.marg').css("margin-top", "0px");
+    // $('#top-logo').css("right", "9%");
+    // }
+    // });
+    // });
+
+
+
+
+    jQuery("#hamburger-nav-icon").click(function () {
+        $(this).toggleClass("open");
+        if (typeof (menuContainer) == "undefined") {
+            menuContainer = $("#menu-container");
+        }
+        $(menuContainer).slideToggle();
+    });
+
+    jQuery("#top-user img").mouseenter(function () {
+        $(this).prop("src", "/images/user_full.svg");
+    }).mouseleave(function () {
+        $(this).prop("src", "/images/user_empty.svg");
+    });
+
+    jQuery("#top-favorites img,.favorites-button img").mouseenter(function () {
+        $(this).prop("src", "/images/favorites_full.svg");
+    }).mouseleave(function () {
+        $(this).prop("src", "/images/favorites_empty.svg");
+    });
+
+    jQuery(".read-more-content").each(function () {
+        var data_minimize_height = $(this).attr("data-minimize-height-px");
+        var content_container = this;
+        if (data_minimize_height != "" && !isNaN(data_minimize_height)) {
+            if ($(content_container).height() > 0) {
+                $(content_container).height(data_minimize_height);
+                $("<button></button>").text("קראו עוד...").addClass("read-more-button").click(function () {
+                    $(content_container).height("unset");
+                    $(this).remove();
+                }).insertAfter(content_container);
+            }
+        }
+    });
+
+    $(window).scroll(function () {
+        if ($(window).scrollTop() > 300) {
+            $(document.body).addClass("up-button");
+        }
+        else {
+            $(document.body).removeClass("up-button");
+        }
+    });
+
+    $("#up-button").click(function () {
+        $("html,body").animate({ "scrollTop": "0px" }, 500);
+    });
+
+    $(".read-more").click(function () {
+        var name = $(this).attr("data-name");
+        $("<div></div>").appendTo(document.body).ecModal({
+            title: name,
+            content: $(this).next().html()
+        });
+
+    });
+
+    $(document.body).delegate(".login-open", "click", function () {
+        hideModal();
+        createModal("התחברות",
+            [
+                "<div id=\"login-popup-container\">",
+                "<div class=\"form-row\">",
+                "<label for=\"login-email\">אימייל</label>",
+                "<input type=\"text\" id=\"login-email\" />",
+                "</div>",
+                "<div class=\"form-row\">",
+                "<label for=\"login-password\">סיסמה</label>",
+                "<input type=\"password\" id=\"login-password\" />",
+                "</div>",
+                "<div style=\"text-align:center;margin-bottom:20px;\"><button class=\"button-design-1\" onclick=\"login(this); return false;\" data-back-text=\"התחברות\">התחברות</button></div>",
+                "<div style=\"text-align:center;\"><p style=\"text-align:center;\">עוד לא רשום? <span class=\"link register-open\">לחץ להרשמה</span></p>",
+                "<p style=\"text-align:center;\"><span class=\"link password-recover-open\">שכחתי סיסמה</span></p></div>",
+                "</div>"
+            ].join("")
+            , "", "", "login-modal");
+    });
+
+    $(document.body).delegate(".register-open", "click", function () {
+        hideModal();
+        createModal("הרשמה", [
+            "<div id=\"register-popup-container\">",
+            "<div class=\"form-row\">",
+            "<label for=\"register-customer-name\">שם פרטי</label>",
+            "<input type=\"text\" id=\"register-customer-name\" />",
+            "</div>",
+            "<div class=\"form-row\">",
+            "<label for=\"register-customer-last-name\">שם משפחה</label>",
+            "<input type=\"text\" id=\"register-customer-last-name\" />",
+            "</div>",
+            "<div class=\"form-row\">",
+            "<label for=\"register-email\">אימייל</label>",
+            "<input type=\"text\" id=\"register-email\" />",
+            "</div>",
+            "<div class=\"form-row\">",
+            "<label for=\"register-password\">סיסמה</label>",
+            "<input type=\"password\" id=\"register-password\" />",
+            "</div>",
+            "<div style=\"text-align:center;margin-bottom:20px;\"><button class=\"button-design-1\" onclick=\"register(this); return false;\" data-back-text=\"הרשמה\">הרשמה</button></div>",
+            "<div style=\"text-align:center;\"><p style=\"text-align:center;\">כבר רשום? <span class=\"link login-open\">לחץ להתחברות</span></p></div>",
+            "</div>"
+        ].join(""), "", "", "register-modal");
+    });
+
+    $(document.body).delegate(".password-recover-open", "click", function () {
+        hideModal();
+        createModal("שחזור סיסמה", [
+            "<div id=\"register-popup-container\">",
+            "<div class=\"form-row\">",
+            "<label for=\"recover-password-email\">דואר אלקטרוני</label>",
+            "<input type=\"text\" id=\"recover-password-email\" />",
+            "</div>",
+            "<div style=\"text-align:center;margin-bottom:20px;\"><button class=\"button-design-1\" onclick=\"recoverPassword(this); return false;\" data-back-text=\"המשך\">המשך</button></div>",
+            "<div style=\"text-align:center;\"><p style=\"text-align:center;\"><span class=\"link orange-link login-open\">חזור להתחברות</span></p>",
+            "<p style=\"text-align:center;\">אין לך חשבון? <span class=\"link orange-link register-open\">לחץ להרשמה</span></p></div>",
+            "</div>"
+        ].join(""), "", "", "recover-password-modal");
+    });
+
+    $(document.body).delegate(".logout-open", "click", function () {
+        $.post("/customer/logout", {}, function (resp) {
+            responseHandle(resp, true, false, true, function (x) {
+                if (window.location.pathname == '/%D7%A4%D7%A8%D7%95%D7%A4%D7%99%D7%9C') {
+                    window.location = "/";
+                }
+                else {
+                    window.location.reload();
+                }
+            });
+        });
+    });
+
+    basketCount = $("#top-cart-count");
+
+    topSearchResult = $("#top-search-results");
+    topSearchLoader = $("#top-search-loader");
+    $("#top-search-input").keyup(function (e) {
+        if (e.keyCode != 13 && e.keyCode != 9 && e.keyCode != 37 && e.keyCode != 38 && e.keyCode != 39 && e.keyCode != 40) {
+            if ($(this).val().length == 0) {
+                $(topSearchLoader).hide;
+            }
+            else if ($(this).val().length > 1) {
+                $(topSearchLoader).show();
+            }
+        }
+    }).typeWatch({
+        callback: function (value) {
+            if (lastSearchValue != value) {
+                lastSearchValue = value;
+                $(topSearchResult).html("");
+                $.get("/search-suggestions?word=" + value, function (resp) {
+                    $(topSearchResult).html(resp);
+                    $(topSearchLoader).hide();
+                });
+            }
+            else {
+                $(topSearchLoader).hide();
+            }
+        },
+        wait: 750,
+        highlight: true,
+        allowSubmit: false,
+        captureLength: 2
+    });
+
+    $(document.body).on("click", ".product-add-to-wish-list", function (e) {
+        var elem = this;
+        e.preventDefault();
+        var addOrRemove = !$(elem).hasClass("favorite");
+        $.post(addOrRemove ? "/add-to-favorites" : "/remove-from-favorites", {
+            id: $(elem).attr("data-prodid")
+        }, function (jresp) {
+            if (jresp.status) {
+                markProductInFavorites(elem, addOrRemove);
+            }
+        });;
+    });
+
+    var favorites = getCookie2("favorites");
+    if (favorites != "") {
+        favorites.split(',').forEach(id => {
+            markProductInFavorites($([".product-add-to-wish-list[data-prodid='", id, "']"].join("")), true);
+        });
+    }
+
+    $("#footer-news-letter").submit(function (e) {
+        e.preventDefault();
+        var button = $(this).find("input[type='submit']");
+        $.post($(this).prop("action"), $(this).serializeObject(), function (jresp) {
+            if (jresp.status) {
+                successModal("נרשמת בהצלחה לרשימת התפוצה!");
+            }
+            else {
+                errorModal(jresp.message);
+            }
+        });
+    });
+
+    var popupContainer = $("#popup-popup-container-container");
+    if ($(popupContainer).length > 0) {
+        var popupId = $(popupContainer).attr("data-popup-id");
+        if (typeof (popupId) != "undefined" && popupId != "") {
+            if (getCookie2("popup") != popupId) {
+                setTimeout(function () {
+                    createModal("", $(popupContainer).html(), undefined, undefined, "popup-popup-modal", true);
+                    setCookie2("popup", popupId, 3);
+                }, 5000);
+            }
+        }
+    }
+});
+
+function isEmpty(value, alternativeValue) {
+    if (typeof (value) == "undefined" || value == null || value == "" || value.trim() == "") {
+        return alternativeValue;
+    }
+    return value;
+}
+
+
+function initProductsSlider(elem) {
+    var booksSlider = $(elem).find(".books-slider");
+    var productsCount = $(booksSlider).find(".product-cube").length;
+    var slideBy = {
+        r_0: Math.min(productsCount, isEmpty($(booksSlider).attr("data-slide-by-0"), 1)),
+        r_300: Math.min(productsCount, isEmpty($(booksSlider).attr("data-slide-by-300"), 2)),
+        r_992: Math.min(productsCount, isEmpty($(booksSlider).attr("data-slide-by-992"), 2))
+    };
+    var items = {
+        r_0: Math.min(productsCount, isEmpty($(booksSlider).attr("data-items-0"), 1.5)),
+        r_300: Math.min(productsCount, isEmpty($(booksSlider).attr("data-items-300"), 2.5)),
+        r_992: Math.min(productsCount, isEmpty($(booksSlider).attr("data-items-992"), 2))
+    };
+    $(booksSlider).owlCarousel({
+        loop: true,
+        margin: 0,
+        nav: true,
+        navText: ["<img src='/images/site/books-slider-right.jpg'  alt='׳’׳׳™׳׳” ׳׳™׳׳™׳' title='׳’׳׳™׳׳” ׳׳™׳׳™׳'>", "<img src='/images/site/books-slider-left.jpg' alt='׳’׳׳™׳׳” ׳׳©׳׳׳' title='׳’׳׳™׳׳” ׳׳©׳׳׳'>"],
+        dots: false,
+        lazyLoad: true,
+        rtl: true,
+        responsive: {
+            0: {
+                items: items.r_0,
+                slideBy: slideBy.r_0
+            },
+            300: {
+                items: items.r_300,
+                slideBy: slideBy.r_300
+            },
+            992: {
+                items: items.r_992,
+                slideBy: slideBy.r_992
+            }
+        }
+    });
+}
+
+
+
+function markProductInFavorites(elem, addOrRemove) {
+    if (addOrRemove) {
+        $(elem).addClass("favorite").find("img").prop("src", "/images/favorites_full.png");
+    }
+    else {
+        $(elem).removeClass("favorite").find("img").prop("src", "/images/favorites_empty.png");
+    }
+}
+
+function isCloseToView(elem) {
+    var pageTop = $(window).scrollTop();
+    var pageBottom = pageTop + $(window).height();
+    var elementTop = $(elem).offset().top;
+    return pageBottom >= elementTop;
+}
+
+function successModal(message) {
+    createModal("", message, undefined, undefined, "success-modal", true);
+}
+
+function errorModal(message) {
+    createModal("", message, undefined, undefined, "error-modal", true);
+}
+
+function createModal(title, body, strSubmitFunc, btnText, modalId, removeModalWhenClose) {
+
+    hideModal();
+
+    if (typeof (removeModalWhenClose) == "undefined") {
+        removeModalWhenClose = false;
+    }
+
+    var code = [
+        "<div class=\"modal fade\" id=\"", modalId, "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"modal-title\" aria-hidden=\"true\">",
+        "<div class=\"modal-dialog modal-dialog-centered\" role=\"document\">",
+        "<div class=\"modal-content\">",
+        "<div class=\"modal-header\">",
+        "<h5 class=\"modal-title\" id=\"modal-title\">", title, "</h5>",
+        "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">",
+        "<span aria-hidden=\"true\">&times;</span>",
+        "</button>",
+        "</div>",
+        "<div class=\"modal-body\">",
+        body,
+        "</div>",
+        "</div>",
+        "</div>",
+        "</div>"];
+
+    $(code.join("")).insertBefore($("#modal-container").children().first());
+    var modal_ref = $("#" + modalId);
+    $(modal_ref).modal('show');
+    if (removeModalWhenClose) {
+        $(modal_ref).on("hide.bs.modal", function () {
+            $(modal_ref).remove();
+        });
+    }
+    setTimeout(function () {
+        $(modal_ref).find(".close").focus();
+    }, 500);
+}
+
+function hideModal(elem) {
+    // Using a very general selector - this is because $('#modalDiv').hide
+    // will remove the modal window but not the mask
+
+    if ($(elem).length > 0) {
+        $(elem).modal("hide");
+        //setTimeout(function () {
+        //    $(elem).remove();
+        //},1000);
+    }
+    else {
+        $('.modal.show').modal('hide');
+        //setTimeout(function () {
+        //    $('.modal').remove();
+        //}, 1000);
+    }
+}
+
+function buttonInProgress(button, text) {
+    $(button).text(text);
+    $(button).addClass("in-progress");
+}
+
+function buttonSuccess(button, text, callback) {
+    $(button).text(text);
+    $(button).addClass("success");
+    setTimeout(function () {
+        buttonBackToRegular(button);
+        if (typeof (callback) != "undefined") {
+            callback();
+        }
+    }, 1000);
+}
+
+function buttonFailed(button, text, callback) {
+    $(button).text(text);
+    $(button).addClass("failed");
+    setTimeout(function () {
+        buttonBackToRegular(button);
+        if (typeof (callback) != "undefined") {
+            callback();
+        }
+    }, 1000);
+}
+
+function buttonBackToRegular(button) {
+    setTimeout(function () {
+        $(button).text($(button).attr("data-back-text"));
+        $(button).removeClass("in-progress");
+        $(button).removeClass("success");
+        $(button).removeClass("failed");
+    }, 500);
+}
+
+function register(button) {
+    try {
+        buttonInProgress(button, "טוען...");
+        var registerModal = $("#register-modal"); //בכל פעם כי בכל פופאפ נוצר מחדש, וכדי להבדיל בין HTML על הדף לפופאפ
+        var registerUserEmailRef = $(registerModal).find("#register-email");
+        var registerUserNameRef = $(registerModal).find("#register-customer-name");
+        var registerUserLastNameRef = $(registerModal).find("#register-customer-last-name");
+        var registerUserPasswordRef = $(registerModal).find("#register-password");
+        var registerUserEmail = $(registerUserEmailRef).val();
+        var registerUserName = $(registerUserNameRef).val();
+        var registerUserPassword = $(registerUserPasswordRef).val();
+
+
+        if (typeof (registerUserEmail) == "undefined" || registerUserEmail == "" || registerUserEmail.trim() == "" || registerUserEmail.indexOf("@") <= 0) {
+            errorModal("כתובת אימייל אינה חוקית!");
+            $(registerUserEmail).focus();
+            buttonBackToRegular(button);
+            return;
+        }
+        else {
+            registerUserEmail = registerUserEmail.trim();
+        }
+        if (typeof (registerUserPassword) == "undefined" || registerUserPassword == "") {
+            errorModal("סיסמה אינה חוקית!");
+            $(registerUserPassword).focus();
+            buttonBackToRegular(button);
+            return;
+        }
+        else if (registerUserPassword.length < 4 || registerUserPassword.length > 20) {
+            errorModal("סיסמה שהוזנה אינה חוקית. יש להזין סיסמה באורך 4-20 תווים!");
+            $(registerUserPassword).focus();
+            buttonBackToRegular(button);
+            return;
+        }
+        else {
+            var passwordValidChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_+/.`~;,\\|><:[]{}= \"'?";
+            for (var passCharIndex = 0; passCharIndex < registerUserPassword.length; passCharIndex++) {
+                if (passwordValidChar.indexOf(registerUserPassword[passCharIndex]) < 0) {
+                    errorModal("תו לא חוקי בסיסמה: " + registerUserPassword[passCharIndex]);
+                    $(registerUserPassword).focus();
+                    buttonBackToRegular(button);
+                    return;
+                }
+            }
+        }
+        if (typeof (registerUserName) == "undefined" || registerUserName == "" || registerUserName.trim() == "") {
+            errorModal("שם הוא שדה חובה!");
+            $(registerUserName).focus();
+            buttonBackToRegular(button);
+            return;
+        }
+        else {
+            registerUserName = registerUserName.trim();
+        }
+
+        $.post("/customer/register", {
+            userEmail: registerUserEmail,
+            userName: registerUserName,
+            userPassword: registerUserPassword,
+            userLastName: $(registerUserLastNameRef).val()
+        }, function (resp) {
+            responseHandle(resp, true, false, true, function () {
+                if (login_register_reload_parameter != "") {
+                    var newlocation = window.location.href;
+                    if (newlocation.indexOf("#") >= 0)
+                        newlocation = newlocation.replace(/#/gi, "");
+                    if (newlocation.indexOf("?") >= 0) {
+                        newlocation += "&callback=" + login_register_reload_parameter;
+                    }
+                    else {
+                        newlocation += "?callback=" + login_register_reload_parameter;
+                    }
+                    window.location.href = newlocation;
+                }
+                else
+                    window.location.reload();
+            });
+            buttonBackToRegular(button);
+        });
+    }
+    catch (ex) {
+        errorModal("שגיאה בנסיון התחברות לאתר. נא פנה למוקד עם צילום שגיאה זו: " + ex);
+        buttonBackToRegular(button);
+    }
+}
+
+function login(button) {
+
+    try {
+        var loginModal = $("#login-modal");
+        var loginUserEmailRef = $(loginModal).find("#login-email");
+        var loginUserPasswordRef = $(loginModal).find("#login-password");
+        var loginUserEmail = $(loginUserEmailRef).val();
+        var loginUserPassword = $(loginUserPasswordRef).val();
+
+        if (typeof (loginUserEmail) == "undefined" || loginUserEmail == "" || loginUserEmail.trim() == "" || loginUserEmail.indexOf("@") <= 0) {
+            errorModal("כתובת אימייל אינה חוקית!");
+            $(loginUserEmailRef).focus();
+            return;
+        }
+        else {
+            loginUserEmail = loginUserEmail.trim();
+        }
+        if (typeof (loginUserPassword) == "undefined" || loginUserPassword == "") {
+            errorModal("סיסמה אינה חוקית!");
+            $(loginUserPasswordRef).focus();
+            return;
+        }
+        else {
+            var passwordValidChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_+/.`~;,\\|><:[]{}= \"'?";
+            for (var passCharIndex = 0; passCharIndex < loginUserPassword.length; passCharIndex++) {
+                if (passwordValidChar.indexOf(loginUserPassword[passCharIndex]) < 0) {
+                    errorModal("תו לא חוקי בסיסמה: " + loginUserPassword[passCharIndex]);
+                    $(loginUserPasswordRef).focus();
+                    return;
+                }
+            }
+        }
+
+        buttonInProgress(button, "טוען...");
+        $.post("/customer/login", {
+            userEmail: loginUserEmail,
+            userPassword: loginUserPassword
+        }, function (resp) {
+            responseHandle(resp, true, false, true, function (respj) {
+                if (getCookie2("clname") == "") {
+                    errorModal("נא הפעל cookies על מנת להתחבר ולרכוש באתר!");
+                }
+                else if (typeof (respj.resp.moreData["togoreset"]) != "undefined" && getCookie2("togoreset") == "") {
+                    window.location = "/איפוס-סיסמה";
+                    setCookie2("togoreset", "1", 180);
+                }
+                else if (document.URL.indexOf(encodeURI("/שחזור-סיסמה/")) > 0)
+                    window.location = "/פרופיל";
+                else {
+                    if (login_register_reload_parameter != "") {
+                        var newlocation = window.location.href;
+                        if (newlocation.indexOf("#") >= 0)
+                            newlocation = newlocation.replace(/#/gi, "");
+                        if (newlocation.indexOf("?") >= 0) {
+                            newlocation += "&callback=" + login_register_reload_parameter;
+                        }
+                        else {
+                            newlocation += "?callback=" + login_register_reload_parameter;
+                        }
+                        window.location.href = newlocation;
+                    }
+                    else
+                        window.location.reload();
+                }
+            });
+            buttonBackToRegular(button);
+        });
+    }
+    catch (ex) {
+        buttonBackToRegular(button);
+        errorModal("שגיאה בנסיון התחברות לאתר. נא פנה למוקד עם צילום שגיאה זו: " + ex);
+    }
+}
+
+function isTrueOrUndefined(b) {
+    return (b === undefined || b == null || b == true);
+}
+
+function responseHandle(resp, isJson, showAlertIfSuccess, showAlertIfFailed, successCallback, failedCallback, successCallbackArguments, failedCallbackArguments) {
+    console.log(arguments);
+    if (successCallbackArguments === undefined)
+        successCallbackArguments = {};
+    if (failedCallbackArguments === undefined)
+        failedCallbackArguments = {};
+
+    if (isJson) {
+        try {
+            resp = JSON.parse(resp);
+        }
+        catch (ex) {
+            if (isTrueOrUndefined(showAlertIfFailed)) {
+                errorModal("שגיאה במהלך ביצוע הפעולה. רענן את הדף.");
+            }
+        }
+    }
+
+    if (resp.status) {
+        if (isTrueOrUndefined(showAlertIfSuccess))
+            successModal("הפעולה בוצעה בהצלחה!");
+        if (typeof successCallback == 'function') {
+            successCallbackArguments["resp"] = resp;
+            successCallback(successCallbackArguments);
+        }
+    }
+    else if (!resp.status) {
+        if (isTrueOrUndefined(showAlertIfFailed)) {
+            if (resp.message != "") {
+                errorModal(resp.message);
+            }
+            else {
+                errorModal("שגיאה בביצוע הפעולה. נסה שנית.");
+            }
+        }
+        if (typeof failedCallback == 'function') {
+            failedCallbackArguments["resp"] = resp;
+            failedCallback(failedCallbackArguments);
+        }
+    }
+}
+
+function addToCart(button, productId, variation, isBundle, bundleProductsIds,
+    giftCardSum, giftCardSenderName, giftCardSenderEmail, giftCardSenderPhone,
+    giftCardReceiverName, giftCardReceiverEmail, giftCardReceiverPhone,
+    giftCardSendDate, giftCardMessage, reCapcha
+) {
+
+    //if (typeof (isBundle) == "undefined")
+    //{
+    //    isBundle = false;
+    //}
+    //if (typeof (bundleProductsIds) == "undefined")
+    //{
+    //    bundleProductsIds = "";
+    //}
+    //
+    //var upgradeProductsIds = ",";
+    //$(".product-upgrade-option-button").each(function () {
+    //    if ($(this).val() != "") {
+    //        upgradeProductsIds += $(this).val() + ",";
+    //    }
+    //});
+    //if (upgradeProductsIds == "," || upgradeProductsIds.trim().replace(/,/gi, "") == "")
+    //{
+    //    upgradeProductsIds = "";
+    //}
+
+    if (typeof (giftCardSum) == "undefined") { giftCardSum = null; }
+    if (typeof (giftCardSenderName) == "undefined") { giftCardSenderName = null; }
+    if (typeof (giftCardSenderEmail) == "undefined") { giftCardSenderEmail = null; }
+    if (typeof (giftCardSenderPhone) == "undefined") { giftCardSenderPhone = null; }
+    if (typeof (giftCardReceiverName) == "undefined") { giftCardReceiverName = null; }
+    if (typeof (giftCardReceiverEmail) == "undefined") { giftCardReceiverEmail = null; }
+    if (typeof (giftCardReceiverPhone) == "undefined") { giftCardReceiverPhone = null; }
+    if (typeof (giftCardSendDate) == "undefined") { giftCardSendDate = null; }
+    if (typeof (giftCardMessage) == "undefined") { giftCardMessage = null; }
+    if (typeof (reCapcha) == "undefined") { reCapcha = null; }
+
+    var cubeContainer = $(button).parents(".product-cube");
+    var quantity = 1;
+    if ($(button).prev("#single-product-quantity").length > 0) {
+        quantity = $(button).prev("#single-product-quantity").val();
+    }
+
+    $.post("/basket/addToBasket", {
+        productId: productId,
+        quantity: quantity,
+        variation: variation,
+        isBundle: false,// isBundle,
+        bundleProductsIds: "",// bundleProductsIds,
+        upgradeProductsIds: "",// upgradeProductsIds
+        giftCardSum: giftCardSum,
+        giftCardSenderName: giftCardSenderName,
+        giftCardSenderEmail: giftCardSenderEmail,
+        giftCardSenderPhone: giftCardSenderPhone,
+        giftCardReceiverName: giftCardReceiverName,
+        giftCardReceiverEmail: giftCardReceiverEmail,
+        giftCardReceiverPhone: giftCardReceiverPhone,
+        giftCardSendDate: giftCardSendDate,
+        giftCardMessage: giftCardMessage,
+        reCapcha: reCapcha,
+    }, function (resp) {
+        var jresp = JSON.parse(resp);
+        if (jresp.status) {
+
+            hideModal();
+            createModal("המוצר נוסף לסל בהצלחה",
+                (typeof (jresp.moreData) != "undefined" && typeof (jresp.moreData.sale) != "undefined" ? jresp.moreData.sale : "") +
+                "<button type='button' class='oprs'onclick='gaeeGoToBasketPage();'>למעבר לסל</button>" +
+                "<button onclick='hideModal(\"#add2basket-modal\");' class='link-button oprs'>להמשך קניה</button>",
+                "", "", "add2basket-modal");
+
+            var modal = $("#add2basket-modal");
+            var products = $(modal).find(".products-group-container");
+            if ($(products).length > 0) {
+                $(modal).addClass("has-products").find(".modal-dialog").css("max-width", (Math.min($(products).find(".product-cube").length, 5) * 223) + 100);
+                $(products).find(".books-slider").attr("data-slide-by-992", 5);
+                initProductsSlider(products);
+                setTimeout(function () {
+                    $(modal).find(".products-group-container").animate({ opacity: 1 }, 200);
+                }, 500);
+            }
+
+            setTimeout(function () {
+                $("#add2basket-modal").find(".oprs").first().focus();
+            }, 100);
+
+            var currentBasketCount = $(basketCount).text();
+            if (isNaN(currentBasketCount))
+                currentBasketCount = 1;
+            currentBasketCount++;
+            $(basketCount).text(currentBasketCount);
+
+
+
+            if (typeof (productID) != "undefined" && productID == productId) //דף מוצר
+            {
+                gaeeAddToBasketFromProductPage(quantity, bundleProductsIds);//, upgradeProductsIds);
+            }
+            else {
+                var elem = $(button).parents(".product-cube");
+                gaeeAddToBasketFromProductCube(elem);
+            }
+
+        }
+        else {
+            errorModal(jresp.message);
+        }
+    });
+
+}
+
+function getCookie2(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function setCookie2(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    console.log(cname + "=" + cvalue + ";" + expires + ";path=/");
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function formFieldError(message, inputRef) {
+    $(inputRef).addClass("vf_error").focus();
+    $(inputRef).change(function () {
+        $(this).removeClass("vf_error");
+    });
+    errorModal(message);
+    //$(inputsArr[i]).popover({ animation: true, delay: { show: 500, hide: 500 }, viewport: inputsArr[i], title: "", content: $(inputsArr[i]).attr("data-validityMessage"), placement: !isMobile ? "left" : "down", html:true });
+    //$(inputsArr[i]).popover('show');
+    $("html,body").animate({ scrollTop: $(inputRef).offset().top - 120 });
+    //$(inputsArr[i]).click(function () {
+    //    $(this).popover('hide');
+    //    $(this).popover('hide'); //!!
+    //});
+}
+
+function formFieldClearError(inputRef) {
+    $(inputRef).removeClass("vf_error");
+}
+
+function checkInputValidity(inputsArr, customCheckValidity) {
+    for (var i = 0; i < inputsArr.length; i++) {
+
+        var func = function () {
+            return $(inputsArr[i])[0].checkValidity();
+        };
+        if (typeof (customCheckValidity) != "undefined") {
+            func = customCheckValidity;
+        }
+
+        if (!func()) {
+            var message = "";
+            if ($(inputsArr[i]).attr("data-fullValidityMessage") != "") {
+                message = $(inputsArr[i]).attr("data-fullValidityMessage");
+            }
+            else {
+                message = "ערך לא חוקי בשדה: " + $(inputsArr[i]).attr("placeholder")
+                    + ". " + $(inputsArr[i]).attr("data-validityMessage");
+            }
+            errorToField(inputsArr[i], message);
+            return false;
+        }
+        else {
+            $(inputsArr[i]).removeClass("vf_error");
+        }
+    }
+
+    return true;
+}
+
+function errorToField(elem, message) {
+
+    $(elem).addClass("vf_error").focus();
+    $(elem).change(function () {
+        $(this).removeClass("vf_error");
+    });
+    errorModal(message);
+    $("html,body").animate({ scrollTop: $(elem).offset().top - 250 });
+}
+
+function isValidEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
+jQuery.fn.serializeObject = function () {
+    var o = {};
+    var a = this.serializeArray();
+    jQuery.each(a, function () {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
+function loadYoutube(youtubeIdentity) {
+    createModal("",
+        "<center><iframe width=\"560\" height=\"315\" " +
+        " src=\"https://www.youtube.com/embed/" + youtubeIdentity + "?autoplay=1\" frameborder=\"0\" " +
+        " allow=\"autoplay; encrypted-media\" allowfullscreen></iframe></center>",
+        "", "", "youtube-modal", true)
+}
+
+function isElementInView(element, fullyInView, minusTop, justAbove) {
+    if (typeof (minusTop) == "undefined")
+        minusTop = 0;
+    //minusTop -  למקרה שלא רוצים שיגיע בדיוק
+    //justAbove - למקרה שלא רוצים בדיקה אם במסך או לא אלא אם מעליו או לא
+    var pageTop = $(window).scrollTop();
+    var pageBottom = pageTop + $(window).height();
+    var elementTop = $(element).offset().top;
+    var elementBottom = elementTop + $(element).height();
+    if (fullyInView === true) {
+        return ((pageTop < elementTop) && (pageBottom > elementBottom));
+    } else if (typeof (justAbove) != "undefined" && justAbove == true) {
+        return pageBottom >= elementTop - minusTop;
+    } else {
+        return ((elementTop - minusTop <= pageBottom) && (elementBottom >= pageTop));
+    }
+}
+
+function logoutBehalfCustomer() {
+    $.post("/logout-behalf-of-customer", {}, function (resp) {
+        var jresp = JSON.parse(resp);
+        if (jresp.status) {
+            window.location.reload();
+        }
+        else {
+            errorModal(jresp.message);
+        }
+    });
+}
+
+function stopBehalfOrder() {
+    $.post("/stop-behalf-of-order", {}, function (resp) {
+        var jresp = JSON.parse(resp);
+        if (jresp.status) {
+            window.location.reload();
+        }
+        else {
+            errorModal(jresp.message);
+        }
+    });
+}
+
+function recoverPassword(button) {
+    try {
+        buttonInProgress(button, "טוען...");
+        var modal = $("#recover-password-modal");
+        var emailRef = $(modal).find("#recover-password-email");
+        var emailVal = $(emailRef).val();
+
+        if (typeof (emailVal) == "undefined" || emailVal == "" || emailVal.trim() == "" || emailVal.indexOf("@") <= 0) {
+            errorModal("כתובת אימייל אינה חוקית!");
+            $(emailRef).focus();
+            buttonBackToRegular(button);
+            return;
+        }
+        else {
+            emailVal = emailVal.trim();
+        }
+
+        $.post("/customer-reset-password", { email: emailVal }, function (resp) {
+            buttonBackToRegular(button);
+            var jresp = JSON.parse(resp);
+            if (jresp.status) {
+                successModal("קישור לאיפוס הסיסמה נשלח לכתובת הדואר האלקטרוני שהזנת");
+            }
+            else {
+                errorModal(jresp.message);
+            }
+        });
+
+    }
+    catch (ex) {
+        errorModal("שגיאה בנסיון התחברות לאתר. נא פנה למוקד עם צילום שגיאה זו: " + ex);
+        buttonBackToRegular(button);
+    }
+}
+
+//function ChooseVariationModal(productId) {
+//    createModal("יש לבחור גרסה",
+//        "<p style='text-align: center;'><span style='display:inline-block' onclick='addToCart(this," + productId + ",31);return false;' class='link-button oprs product-page-add-2-cart'>ספר מודפס</span>"
+//        + "<span style='display:inline-block' onclick='addToCart(this," + productId + ",32);return false;' class='link-button oprs product-page-add-2-cart'>ספר דיגיטלי</span></p>",
+//        "", "", "choose-variation-modal");
+//}
+
+//function addToCompareList(button,productId,categoryId) 
+//{
+//    if (!$(button).hasClass("added")) {
+//        setCookie2("cat_compare_" + categoryId, getCookie2("cat_compare_" + categoryId) + "," + productId + ",", 7);
+//        $(button).find(".add-to-compare-list-preview-text").html("הסר מהשוואה");
+//        $(button).addClass("added");
+//        $(button).next(".compare-link").show();
+//    }
+//    else
+//    {
+//        removeFromCompareList(productId, categoryId);
+//        $(button).find(".add-to-compare-list-preview-text").html("הוסף להשוואה");
+//        $(button).removeClass("added");
+//        $(button).next(".compare-link").hide();
+//    }
+//}
+
+//function removeFromCompareList(productId,categoryId)
+//{
+//    var v = getCookie2("cat_compare_" + categoryId).replace(new RegExp("," + productId + ",", "gi"), "");
+//    if (v == "" || v.trim() == "" || v.trim().replace(/,/gi, "") == "") {
+//        v = "";
+//    }
+//    setCookie2("cat_compare_" + categoryId, v, 7);
+//}

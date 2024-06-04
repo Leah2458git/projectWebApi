@@ -1,0 +1,304 @@
+﻿/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Card Styling */
+.card {
+    background-color: white; /* White background */
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    width: 450px; /* Bigger card */
+    padding: 50px; /* Increased padding */
+    text-align: center;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+label {
+    color: #333; /* Dark Gray */
+    display: block;
+    margin-bottom: 10px; /* Increased margin for better spacing */
+    font-weight: bold;
+}
+
+input {
+    width: calc(100% - 20px);
+    padding: 12px; /* Increased padding for larger inputs */
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fafafa; /* Light Gray input background */
+    color: #333; /* Dark Gray text */
+}
+
+button {
+    background-color: #40e0d0; /* Turquoise */
+    color: #fff;
+    border: none;
+    padding: 12px 24px; /* Increased padding for larger buttons */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    button:hover {
+        background-color: #36b7a8; /* Darker turquoise */
+    }
+
+a {
+    color: #40e0d0; /* Turquoise */
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Card Styling */
+.card {
+    background-color: white; /* White background */
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    width: 450px; /* Bigger card */
+    padding: 50px; /* Increased padding */
+    text-align: center;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+label {
+    color: #333; /* Dark Gray */
+    display: block;
+    margin-bottom: 10px; /* Increased margin for better spacing */
+    font-weight: bold;
+}
+
+input {
+    width: calc(100% - 20px);
+    padding: 12px; /* Increased padding for larger inputs */
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fafafa; /* Light Gray input background */
+    color: #333; /* Dark Gray text */
+}
+
+button {
+    background-color: #40e0d0; /* Turquoise */
+    color: #fff;
+    border: none;
+    padding: 12px 24px; /* Increased padding for larger buttons */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    button:hover {
+        background-color: #36b7a8; /* Darker turquoise */
+    }
+
+a {
+    color: #40e0d0; /* Turquoise */
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Card Styling */
+.card {
+    background-color: white; /* White background */
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    width: 450px; /* Bigger card */
+    padding: 50px; /* Increased padding */
+    text-align: center;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+label {
+    color: #333; /* Dark Gray */
+    display: block;
+    margin-bottom: 10px; /* Increased margin for better spacing */
+    font-weight: bold;
+}
+
+input {
+    width: calc(100% - 20px);
+    padding: 12px; /* Increased padding for larger inputs */
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fafafa; /* Light Gray input background */
+    color: #333; /* Dark Gray text */
+}
+
+button {
+    background-color: #40e0d0; /* Turquoise */
+    color: #fff;
+    border: none;
+    padding: 12px 24px; /* Increased padding for larger buttons */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    button:hover {
+        background-color: #36b7a8; /* Darker turquoise */
+    }
+
+a {
+    color: #40e0d0; /* Turquoise */
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Card Styling */
+.card {
+    background-color: white; /* White background */
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    width: 550px; /* Bigger card */
+    padding: 50px; /* Increased padding */
+    text-align: center;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+label {
+    color: #333; /* Dark Gray */
+    display: block;
+    margin-bottom: 10px; /* Increased margin for better spacing */
+    font-weight: bold;
+}
+
+input {
+    width: calc(100% - 20px);
+    padding: 12px; /* Increased padding for larger inputs */
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fafafa; /* Light Gray input background */
+    color: #333; /* Dark Gray text */
+}
+
+button {
+    background-color: #36b7a8; /* Turquoise */
+    color: #fff;
+    border: none;
+    padding: 12px 24px; /* Increased padding for larger buttons */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    button:hover {
+        background-color: #0c5f4c; /* Darker turquoise */
+    }
+
+a {
+    color: #36b7a8; /* Turquoise */
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }

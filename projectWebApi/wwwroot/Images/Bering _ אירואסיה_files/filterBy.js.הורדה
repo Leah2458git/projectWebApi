@@ -1,0 +1,106 @@
+﻿
+var products_group_page_obj = {};
+
+$(document.body).ready(function () {
+    products_group_page_obj = {
+        filter_by: {
+            options: $(".filter-option"),
+            order_options:$("input[name='products-filter-order-by-radio']"),
+            clear_buttons: $(".clear-options"),
+            prices_range: $("#slider-range"),
+            min_price: typeof (filterPriceMin) != "undefined" ? filterPriceMin : undefined,
+            max_price: typeof (filterPriceMax) != "undefined" ? filterPriceMax : undefined,
+            min_price_selected: typeof (filterPriceMinSelected) != "undefined" ? filterPriceMinSelected : undefined,
+            max_price_selected: typeof (filterPriceMaxSelected) != "undefined" ? filterPriceMaxSelected : undefined
+        }
+    };
+    $(products_group_page_obj.filter_by.options).on("change", function () {
+        filterBy();
+    });
+    $(products_group_page_obj.filter_by.order_options).on("change", function () {
+        filterBy();
+    });
+    $(products_group_page_obj.filter_by.clear_buttons).on("click", function () {
+        $(this).parents(".filter-property").find(".filter-option").each(function () {
+            this.checked = false;
+        }).first().trigger('change');
+    });
+
+    if (typeof (products_group_page_obj.filter_by.min_price) != "undefined" &&
+        typeof (products_group_page_obj.filter_by.max_price) != "undefined" &&
+        $(products_group_page_obj.filter_by.prices_range).length > 0) {
+        $(products_group_page_obj.filter_by.prices_range).slider({
+            range: true,
+            min: products_group_page_obj.filter_by.min_price,
+            max: products_group_page_obj.filter_by.max_price,
+            values: [products_group_page_obj.filter_by.min_price_selected, products_group_page_obj.filter_by.max_price_selected],
+            slide: function (event, ui) {
+                $("#amount").html("<span class='amount-to'>" +
+                    ui.values[1] +
+                    " ₪</span> <span class='amount-from'>" + ui.values[0] +
+                    " ₪</span><div class='clear clearfix></div>"
+                );
+            },
+            change: function (event, ui) {
+                products_group_page_obj.filter_by.min_price_selected = ui.values[0];
+                products_group_page_obj.filter_by.max_price_selected = ui.values[1];
+                filterBy();
+            }
+        });
+        $("#amount").html("<span class='amount-to'>" +
+            $("#slider-range").slider("values", 1) +
+            " ₪</span><span class='amount-from'>" +
+            $("#slider-range").slider("values", 0) + " ₪</span><div class='clear clearfix'></div>"
+        );
+    }
+
+    $(".products-pool .filter-bar .filter-property .filter-title").click(function () {
+        $(this).toggleClass("open");
+    })
+
+});
+
+function filterBy() { 
+    var query_without_filter = window.location.search.replace(/filter=([\,\d\_\-]*),&?/, "")
+        .replace(/orderBy=(n|etc|cte|h)&?/, "").replace(/fp=\d*&?/, "").replace(/tp=\d*&?/, "")
+        .replace("/&/gi","");
+    var url = [window.location.pathname, query_without_filter];
+    var filters = [];
+    var filter_by = [];
+    $(products_group_page_obj.filter_by.options).filter(function () {
+        return this.checked
+    }).each(function () {
+        filter_by.push($(this).attr("data-property-id"));
+        filter_by.push("_");
+        filter_by.push($(this).attr("data-value-id"));
+        filter_by.push("_");
+        filter_by.push($(this).attr("data-type-id"));
+        filter_by.push(",");
+    });
+    if (filter_by.length > 0) {
+        filters.push("&filter=,");
+        filters.push(filter_by.join(""));
+    }
+    filters.push("&orderBy=");
+    filters.push($(products_group_page_obj.filter_by.order_options).filter(function () {
+        return $(this)[0].checked
+    }).val());
+    if (typeof (clearPrice) == "undefined" || clearPrice == false) {
+        if (typeof (products_group_page_obj.filter_by.min_price_selected) != "undefined" && typeof (products_group_page_obj.filter_by.max_price_selected) != "undefined") {
+            filters.push("&fp=");
+            filters.push(products_group_page_obj.filter_by.min_price_selected);
+            filters.push("&tp=");
+            filters.push(products_group_page_obj.filter_by.max_price_selected);
+        }
+    }
+    var new_url = url.join("").replace(/[.]*([\?|\&]{1})$/,"");
+    if (filters.length > 0){
+        if (new_url.indexOf("?") >= 0){
+            new_url += filters.join("").replace(/[.]*([\?|\&]{1})$/, "");
+        }
+        else {
+            new_url += "?" + filters.join("").substring(1).replace(/[.]*([\?|\&]{1})$/, "");
+        }
+    }
+    window.location = new_url;
+}

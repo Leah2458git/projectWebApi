@@ -1,0 +1,411 @@
+﻿
+var dataLayer = window.dataLayer || [];
+
+jQuery(document).ready(function () {
+
+    $(document.body).delegate(".product-cube[data-status='10'] .product-url", "click", function (e) {
+        e.preventDefault();
+        var productCube = $(this).parents(".product-cube");
+        var url = $(this).prop("href");
+        gaeeProductClick(productCube, url);
+    });
+});
+
+function gaeeImpressions(arr, list) {
+    var products = [];
+    $(arr).each(function () {
+        list = list.replace(/\"/gi, "&#34;");
+        var obj = gaeeProductCubeCollect(this);
+        obj.list = list;
+        obj.variant = "NA";
+        products.push(obj);
+        $(this).addClass("gaee-impression").attr("data-list", list);
+    });
+    gaeeDataLayerPushImpressions(products);
+}
+
+function gaeeProductClick(elem, url) {
+    console.log("gaeeProductClick");
+    var products = [];
+    products.push(gaeeProductCubeCollect(elem));
+    console.log(products);
+    console.log(url);
+    gaeeDataLayerPush("productClick", "click", { 'list': products[0].list }, products, function () {
+        console.log(url);
+        window.location = url;
+    });
+}
+
+function gaeeProductPageCollect() {
+    var colorName = "";
+    try {
+        var color = $("#product-page .product-variation-option-button[name='product-color-input']:checked");
+        if (color.length > 0) {
+            colorName = $(color).parents(".color-container").find(".color").prop("title");
+        }
+    }
+    catch (ex) { }
+
+    var memoryName = "NA";
+    try {
+        var memory = $("#product-page .product-variation-option-button[data-product-variation-option-title-id='2'] option:selected");
+        if (memory.length > 0) {
+            memoryName = $(memory).text();
+        }
+    }
+    catch (ex) { }
+
+    return {
+        'id': productID,
+        'name': productName,
+        'category': categoryName,
+        'price': price,
+        'brand': manufacturerName,
+        'variant': memoryName,
+        'dimension1': colorName
+    };
+}
+
+function gaeeProductPageLoad() {
+    var products = [];
+    products.push(gaeeProductPageCollect());
+    gaeeDataLayerPush('productDetails', 'detail', { 'list': "דף מוצר" }, products);
+}
+
+function gaeeAddToBasketFromProductPage(quantity,bundleIds, upgradeIds) {
+    var products = [];
+    products.push(gaeeProductPageCollect());
+    products[0].quantity = quantity;
+
+    if (typeof (bundleIds) != "undefined") {
+        var ids = bundleIds.split(",");
+        var bundleContainer = $(".product-bundle-container");
+        for (var i = 0; i < ids.length; i++) {
+            if (ids[i] != "") {
+                var bundleCube = $(bundleContainer).find(".product-cube[data-prodid='" + ids[i] + "']");
+                if (bundleCube.length > 0) {
+                    var obj = gaeeProductBundleCollect(bundleCube);
+                    obj.quantity = quantity;
+                    products.push(obj);
+                }
+            }
+        }
+    }
+
+    gaeeDataLayerPush('addToCart', 'add', { 'list': "דף מוצר" }, products);
+    //gaeeProductsAddedToBasket(products);
+}
+
+function gaeeAddToBasketFromProductCube(elem) {
+    var products = [];
+    products.push(gaeeProductCubeCollect(elem));
+    products[0].quantity = 1;
+    gaeeDataLayerPush('addToCart', 'add', { 'list': products[0].list }, products);
+    //gaeeProductsAddedToBasket(products);
+}
+
+function gaeeProductCubeCollect(elem) {
+    return {
+        id: $(elem).attr("data-prodID"),
+        name: $(elem).attr("data-fullName"),
+        category: $(elem).attr("data-category"),
+        price: $(elem).attr("data-price"),
+        brand: $(elem).attr("data-manufacturer"),
+        variant: "NA",
+        position: $(elem).attr("data-index"),
+        list: $(elem).attr("data-list")
+    };
+}
+
+function gaeeProductBundleCollect(elem) {
+    return {
+        id: $(elem).attr("data-prodid"),
+        name: $(elem).attr("data-fullName"),
+        category: $(elem).attr("data-category"),
+        price: $(elem).find(".pprice").text().replace(/₪/gi, "").replace(/,/gi, "").trim(),
+        brand: $(elem).attr("data-manufacturer"),
+        variant: "NA",
+        list: $(elem).attr("data-list")
+    };
+}
+
+//function gaeeTopBasketCollect(rows) {
+//
+//    if (typeof (rows) == "undefined") {
+//        rows = $("#bottom-cart .cart-products");// $("#top-site-basket-items-container .cart-products");
+//    }
+//    var products = [];
+//    $(rows).each(function () {
+//        products.push({
+//            id: $(this).attr("data-productid"),
+//            name: $(this).attr("data-fullName"),
+//            brand: $(this).attr("data-manufacturer"),
+//            category: $(this).attr("data-category"),
+//            quantity: $(this).find("quan").text(),
+//            price: $(this).find("price").text().trim().replace(/₪/gi, ""),
+//            variant: "NA"
+//        });
+//    });
+//    return products;
+//}
+
+function gaeePageBasketCollect(rows) {
+    if (typeof (rows) == "undefined") {
+        rows = $("#basket-table .basket-row.book-cube");
+    }
+    var products = [];
+    $(rows).each(function () {
+        products.push({
+            id: $(this).attr("data-prodid"),
+            name: $(this).attr("data-name"),// $(this).find(".basket-row-product-name > a").text(),
+            brand: $(this).attr("data-manufacturer"),
+            category: $(this).attr("data-category"),
+            quantity: $(this).attr("data-quantity"),
+            price: $(this).attr("data-price"),// $(this).find(".basket-row-product-price").text().trim().replace(/₪/gi, "").replace(",", "").replace(",", ""),
+            variant: "NA"
+        });
+    });
+    return products;
+}
+
+function gaeeChangeProductQuantityFromBasket(rowsArr, oldQuantity, newQuantity) {
+    var products;
+    var quantity;
+    var action1;
+    var action2;
+    if (newQuantity != oldQuantity) {
+        if (newQuantity > oldQuantity) {
+            quantity = newQuantity - oldQuantity;
+            action1 = "addToCart";
+            action2 = "add";
+        }
+        else if (oldQuantity > newQuantity) {
+            quantity = oldQuantity - newQuantity;
+            action1 = "removeFromCart";
+            action2 = "remove";
+        }
+        products = gaeePageBasketCollect(rowsArr);
+        products.forEach(x => {
+            x.quantity = quantity
+        });
+        //באנדל?
+        gaeeDataLayerPush(action1, action2, { 'list': "סל קניות" }, products);
+    }
+}
+
+function gaeeRemoveProductFromBasket(rowsArr, list, type) {
+    var products;
+    //if (type == 1) {
+    //    products = gaeeTopBasketCollect(rowsArr);
+    //    $(rowsArr).remove();
+    //}
+    //else {
+        products = gaeePageBasketCollect(rowsArr);
+    //}
+    gaeeDataLayerPush('removeFromCart', 'remove', { 'list': list }, products);
+}
+
+function gaeeGoToBasketPage() {
+    $.get("/get-basket-rows", function (data) {
+        var dataj = JSON.parse(data);
+        if (dataj.status) {
+            var products = dataj.products;// gaeeTopBasketCollect();
+            gaeeDataLayerPush('checkout', 'checkout', { 'step': 1, 'option': 'סל קניות' }, products, function () {
+                window.location = "/סל-קניות";
+            });
+        }
+        else {
+            window.location = "/סל-קניות";
+        }
+    });
+}
+
+function gaeeCheckoutStep2() {
+    var products = gaeePageBasketCollect();
+    //var isMailList = $("#isMailList")[0].checked ? "אישרו דיוור" : "לא אישרו דיוור";
+    //$(products).each(function () {
+    //    this.dimension2 = isMailList;
+    //});
+    gaeeDataLayerPush('checkout', 'checkout', { 'step': 2, 'option': 'מעבר לתשלום' }, products);
+}
+
+
+function gaeePromotionsCollect(elem) {
+    return {
+        id: $(elem).attr("data-id"),
+        name: $(elem).attr("data-file"),
+        creative: "",
+        position: (isMobile ? "m" : "d") + $(elem).attr("data-position")
+    };
+}
+
+
+function gaeePromotions(arr) {
+    var promotions = [];
+    $(arr).each(function () {
+        var obj = gaeePromotionsCollect(this);
+        promotions.push(obj);
+        $(this).addClass("gaee-promotions");
+    });
+    gaeeDataLayerPushPromotions(promotions);
+    $(arr).click(function (e) {
+        e.preventDefault();
+        gaeePromotionClicked(this);
+    });
+}
+
+function gaeePromotionClicked(elem) {
+    var promotions = [];
+    promotions.push(gaeePromotionsCollect(elem));
+    var url = "";
+    if ($(elem).prop("href") != "") {
+        url = $(elem).prop("href");
+    }
+    if (typeof (url) != "undefined") {
+        gaeeDataLayerPushPromotionClicked(promotions, url);
+    }
+}
+
+
+function gaeeDataLayerPush(event, ecommerceObjKey, actionField, products, eventCallback) {
+
+    console.log("gaeeDataLayerPush");
+
+    if (window.ga && ga.loaded) {
+        var ecommerceObj = {};
+        ecommerceObj[ecommerceObjKey] = {
+            'actionField': actionField,
+            'products': products
+        };
+
+        var eventObj = {
+            'event': event,
+            'ecommerce': ecommerceObj
+        };
+
+        if (typeof (eventCallback) != "undefined") {
+            eventObj["eventCallback"] = eventCallback;
+        }
+
+        console.log(eventObj);
+        dataLayer.push(eventObj);
+    }
+    else {
+        if (typeof (eventCallback) != "undefined") {
+            eventCallback();
+        }
+    }
+}
+
+function gaeeDataLayerPushImpressions(products) {
+
+    var eventObj = {
+        'event': 'impression',
+        'ecommerce': {
+            'impressions': products
+        }
+    };
+
+    console.log(eventObj);
+    dataLayer.push(eventObj);
+}
+
+function gaeeDataLayerPushPromotions(promotions) {
+
+    var eventObj = {
+        'ecommerce': {
+            'promoView': {
+                'promotions': promotions
+            }
+        }
+    };
+
+    //console.log(eventObj);
+    dataLayer.push(eventObj);
+}
+
+
+function gaeeDataLayerPushPromotionClicked(promotions, url) {
+
+    if (window.ga && ga.loaded) {
+
+        var obj = {
+            'event': 'promotionClick',
+            'ecommerce': {
+                'promoClick': {
+                    'promotions': promotions
+                }
+            },
+            'eventCallback': function () {
+                window.location = url;
+            }
+        };
+
+        //console.log(obj);
+        dataLayer.push(obj);
+    }
+    else {
+        window.location = url;
+    }
+}
+
+
+//function gaeeProductsAddedToBasket(products) {
+//    var basketId = getCookie("basket");
+//    var gaeeBasketObj = [];
+//    if (localStorage.getItem("gaee_" + basketId) != null) {
+//        gaeeBasketObj = JSON.parse(localStorage.getItem("gaee_" + basketId));
+//    }
+//    $(products).each(function () {
+//        gaeeBasketObj.push(this);
+//    });
+//    localStorage.setItem("gaee_" + basketId, JSON.stringify(gaeeBasketObj));
+//}
+
+//function gaeeGetLocalStorageBasket() {
+//    var basketId = getCookie("basket");
+//    var gaeeBasketObj;
+//    if (localStorage.getItem("gaee_" + basketId) != null) {
+//        gaeeBasketObj = JSON.parse(localStorage.getItem("gaee_" + basketId));
+//    }
+//    return gaeeBasketObj;
+//}
+
+//function gaeeLocalStorageCollect(productsIds) {
+//    var products = [];
+//    var gaeeBasketObj = gaeeGetLocalStorageBasket();
+//    if (gaeeBasketObj != null) {
+//        var ids = productsIds.split(",");
+//        for (var i = 0; i < ids.length; i++) {
+//            if (ids[i] != "") {
+//                var obj = $(gaeeBasketObj).filter(function () {
+//                    return this.id == ids[i];
+//                });
+//                if (obj.length > 0) {
+//                    obj[0].list = list;
+//                    products.push(obj[0]);
+//                }
+//            }
+//        }
+//    }
+//    return products;
+//}
+
+//function gaeeLocalStorageCollectAndUpdateFromBasket() {
+//    var products = [];
+//    var gaeeBasketObj = gaeeGetLocalStorageBasket();
+//    if (gaeeBasketObj != null) {
+//        $("#top-site-basket-slider-container .cart-products").each(function () {
+//            var id = $(this).attr("data-productid");
+//            var obj = $(gaeeBasketObj).filter(function () {
+//                return this.id == id;
+//            });
+//            if (obj.length > 0) {
+//                obj[0].quantity = $(this).find("quan").text();
+//                obj[0].price = $(this).find("price").text().trim().replace(/₪/gi, "");
+//                products.push(obj[0]);
+//            }
+//        });
+//    }
+//    return products;
+//}

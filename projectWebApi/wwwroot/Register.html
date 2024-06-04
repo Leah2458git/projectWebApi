@@ -1,0 +1,50 @@
+﻿<!--<!DOCTYPE html>
+<html>
+<head>
+    <script src="../Scripts/userActions.js"></script>
+    <link href="Style/Register.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body style="text-align:center">
+    <h1>משתמש חדש</h1>
+
+    <label>שם משתמש</label><br />
+    <input id="emailRegister" /><br /><br />
+    <label>סיסמא</label><br />
+    <input id="passwordRegister" oninput="CheckPassword()"/><br /><br />
+    <button style="color: chocolate" onClick="CheckPassword()">בדיקת חוזק סיסמא</button><br /><br />
+    <progress id="passwordStrengh" max="4" value="0"></progress><br/><br />
+    <label>שם פרטי</label><br />
+    <input id="firstName" /><br /><br />
+    <label>שם משפחה</label><br />
+    <input id="lastName" /><br /><br />
+    <button style="color: chocolate" onclick="Register()">הרשמה</button>
+</body>
+</html>-->
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../Scripts/userActions.js"></script>
+    <link href="Style/Register.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <title>משתמש חדש</title>
+</head>
+<body>
+    <div class="card">
+        <h1>משתמש חדש</h1>
+
+        <label>שם משתמש</label>
+        <input id="emailRegister" type="text" /><br />
+        <label>סיסמא</label>
+        <input id="passwordRegister" type="password" oninput="CheckPassword()" /><br />
+        <!--<button onclick="CheckPassword()">בדיקת חוזק סיסמא</button><br />-->
+        <progress id="passwordStrengh" max="4" value="0"></progress><br />
+        <label>שם פרטי</label>
+        <input id="firstName" type="text" /><br />
+        <label>שם משפחה</label>
+        <input id="lastName" type="text" /><br />
+        <button onclick="Register()">הרשמה</button>
+    </div>
+</body>
+</html>
